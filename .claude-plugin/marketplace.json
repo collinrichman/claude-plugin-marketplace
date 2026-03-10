@@ -1,0 +1,23 @@
+{
+  "name": "collin-plugins",
+  "owner": {
+    "name": "Collin Richman"
+  },
+  "metadata": {
+    "description": "Collin Richman's personal Claude Code plugin marketplace",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "hello-world",
+      "source": "hello-world",
+      "description": "A simple hello world plugin to verify marketplace setup",
+      "version": "1.0.0",
+      "author": {
+        "name": "Collin Richman"
+      },
+      "keywords": ["example", "starter"]
+    }
+  ]
+}

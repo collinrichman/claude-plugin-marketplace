@@ -1,0 +1,7 @@
+{
+  "name": "hello-world",
+  "description": "A simple hello world plugin to verify marketplace setup",
+  "author": {
+    "name": "Collin Richman"
+  }
+}
