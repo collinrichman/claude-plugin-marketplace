@@ -75,7 +75,7 @@ Add an entry to `.claude-plugin/marketplace.json` in the `plugins` array:
 ```json
 {
   "name": "clr-<name>",
-  "source": "clr-<name>",
+  "source": "./plugins/clr-<name>",
   "description": "<description>",
   "version": "1.0.0",
   "author": {

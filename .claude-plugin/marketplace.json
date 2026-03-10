@@ -5,13 +5,12 @@
   },
   "metadata": {
     "description": "Collin Richman's personal Claude Code plugin marketplace",
-    "version": "1.0.0",
-    "pluginRoot": "./plugins"
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "clr-hello-world",
-      "source": "clr-hello-world",
+      "source": "./plugins/clr-hello-world",
       "description": "A simple hello world plugin to verify marketplace setup",
       "version": "1.0.0",
       "author": {
@@ -21,7 +20,7 @@
     },
     {
       "name": "clr-plugin-dev",
-      "source": "clr-plugin-dev",
+      "source": "./plugins/clr-plugin-dev",
       "description": "Meta plugin development tools for the clr-plugins marketplace",
       "version": "1.0.0",
       "author": {
