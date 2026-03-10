@@ -1,7 +1,7 @@
 ---
 name: clr-skill-creator
-description: This skill should be used when the user asks to "create a plugin", "create a skill", "add a skill", "scaffold a plugin", "add a new plugin to the marketplace", "build a skill", or wants guidance on plugin/skill structure in the clr-plugins marketplace. Also triggers on "new plugin", "new skill", or "skill creator".
-argument-hint: [new-plugin|add-skill]
+description: Use when the user asks to "create a plugin", "create a skill", "add a skill", "scaffold a plugin", "add a new plugin to the marketplace", "build a skill", or wants guidance on plugin/skill structure in the clr-plugins marketplace. Also use when the user says "new plugin", "new skill", "skill creator", or describes functionality they want to package as a plugin — even if they don't use the word "plugin" or "skill" explicitly.
+argument-hint: "new-plugin|add-skill"
 ---
 
 # Skill Creator for clr-plugins Marketplace
@@ -124,14 +124,44 @@ Analyze each example to identify reusable resources:
 ```yaml
 ---
 name: clr-<skill-name>
-description: This skill should be used when the user asks to "<phrase 1>", "<phrase 2>", "<phrase 3>", or <broader trigger condition>. <Brief summary of what it provides>.
+description: Use when the user asks to "<phrase 1>", "<phrase 2>", "<phrase 3>", or <broader trigger condition>. <Brief summary of what it provides>.
 ---
 ```
 
 Description rules:
-- Use third person ("This skill should be used when...")
+- Use imperative phrasing ("Use when..." not "This skill should be used when...")
 - Include 3-5 specific trigger phrases in quotes
+- Focus on user intent, not implementation — describe what the user is trying to achieve, not the skill's internal mechanics
 - Be concrete about scenarios
+- Cover implicit triggers — users who describe what they want without using exact keywords
+
+### Additional Frontmatter Fields
+
+Beyond `name`, `description`, and `argument-hint`, these fields control invocation behavior:
+
+- **`disable-model-invocation: true`** — Prevents Claude from auto-triggering. Only manual `/skill-name` invocation works. Use for skills with side effects (deploy, commit, destructive operations).
+- **`user-invocable: false`** — Hides from user's slash command list. Use for background knowledge skills that only Claude should invoke.
+- **`allowed-tools`** — Restricts which tools the skill can use. Use for security-sensitive skills (e.g., read-only research skills that should not write files). Accepts a list of tool names.
+- **`context: fork`** — Runs the skill in an isolated subagent context. Use when the skill is heavy, self-contained, or should not pollute the main conversation context. Combine with the `agent` field to specify which subagent type runs it.
+
+### String Substitutions
+
+Skills support these substitution patterns in SKILL.md content:
+
+- **`$ARGUMENTS`** — Full argument string passed when skill is invoked (e.g., `/clr-my-skill foo bar` → `$ARGUMENTS` = `"foo bar"`)
+- **`$ARGUMENTS[N]` / `$N`** — Positional argument access (`$1` = first arg, `$2` = second)
+- **`${CLAUDE_SKILL_DIR}`** — Absolute path to the skill's directory. Use to reference bundled files: `Read ${CLAUDE_SKILL_DIR}/references/patterns.md`
+- **`${CLAUDE_SESSION_ID}`** — Current session ID. Use for session-specific tracking or logging.
+
+### Dynamic Context Injection
+
+Use the `` !`command` `` syntax to inject shell command output into the skill content at load time. This runs a shell command and inlines its stdout:
+
+```markdown
+Current git branch: !`git branch --show-current`
+```
+
+Use sparingly — only when the skill needs live data that changes between invocations.
 
 #### Body
 
@@ -168,7 +198,7 @@ After creating the skill, verify:
 
 1. **Structure**: SKILL.md exists in `plugins/clr-<plugin>/skills/clr-<skill-name>/`
 2. **Frontmatter**: Has `name` (with clr- prefix) and `description`
-3. **Description**: Third person, 3-5 specific trigger phrases
+3. **Description**: Imperative phrasing ("Use when..."), 3-5 specific trigger phrases
 4. **Writing style**: Imperative form, no second person
 5. **Progressive disclosure**: SKILL.md lean (~1,500-2,000 words), details in references/
 6. **References**: All referenced files exist
@@ -186,10 +216,21 @@ claude --plugin-dir ./plugins/clr-<name>
 
 Invoke the skill and verify it triggers on expected phrases.
 
+### Eval-Driven Testing
+
+For more rigorous testing, design trigger evals:
+
+1. **Should-trigger queries** — Phrases that must activate the skill (e.g., "create a plugin", "add a skill to my project")
+2. **Should-NOT-trigger queries** — Phrases that are similar but should not activate (e.g., "delete a plugin", "list all skills")
+3. **Implicit trigger queries** — Phrases that don't use keywords but describe the intent (e.g., "I want to package this as something reusable")
+
+Test each query and verify the skill triggers (or doesn't) correctly. Track pass/fail rates and iterate on the description to improve accuracy.
+
 ## Iteration
 
 After testing, common improvements include:
-- Strengthening trigger phrases in the description
+- Strengthening trigger phrases in the description based on eval results
+- Adding implicit trigger coverage for missed intent patterns
 - Moving long sections from SKILL.md to references/
 - Adding missing scripts or examples
 - Clarifying ambiguous instructions

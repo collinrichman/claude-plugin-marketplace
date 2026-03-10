@@ -22,33 +22,37 @@ clr-skill-name/
 ### Required Fields
 
 - **name**: Skill identifier. Must start with `clr-`. Use kebab-case (e.g., `clr-pdf-editor`).
-- **description**: When this skill triggers. Use third-person format with specific trigger phrases.
+- **description**: When this skill triggers. Use imperative phrasing with specific trigger phrases.
 
 ### Optional Fields
 
 - **argument-hint**: Hint text shown to user for expected arguments (e.g., `[new-plugin|add-skill]`).
+- **disable-model-invocation**: Set to `true` to prevent Claude from auto-triggering. Only manual `/skill-name` invocation works. Use for skills with side effects (deploy, commit).
+- **user-invocable**: Set to `false` to hide from the user's slash command list. Use for background knowledge skills that only Claude should invoke.
+- **allowed-tools**: Restricts which tools the skill can use. Use for security-sensitive skills (e.g., read-only research skills).
+- **context**: Set to `fork` to run in an isolated subagent. Use for heavy, self-contained skills.
 
 ## Description Best Practices
 
-### Third-Person Format with Trigger Phrases
+### Imperative Phrasing with Trigger Phrases
 
-The description determines when Claude loads the skill. Include specific phrases users would say.
+The description determines when Claude loads the skill. Use imperative phrasing ("Use when...") and include specific phrases users would say. Focus on user intent, not implementation mechanics.
 
 **Good examples:**
 
 ```yaml
-description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events (PreToolUse, PostToolUse, Stop).
+description: Use when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events (PreToolUse, PostToolUse, Stop).
 ```
 
 ```yaml
-description: This skill should be used when the user asks to "edit a PDF", "rotate pages", "merge PDFs", "extract text from PDF", or needs PDF manipulation guidance.
+description: Use when the user asks to "edit a PDF", "rotate pages", "merge PDFs", "extract text from PDF", or needs PDF manipulation guidance.
 ```
 
 **Bad examples:**
 
 ```yaml
 description: Provides guidance for working with hooks.  # Vague, no triggers
-description: Use this skill when you want to edit PDFs.  # Wrong person
+description: This skill should be used when editing PDFs.  # Passive, not imperative
 description: Load when user needs help.                  # Too generic
 ```
 
@@ -154,8 +158,9 @@ Fix: All names (plugin, skill, agent, hook) must start with `clr-`.
 - [ ] Referenced files actually exist
 
 **Description Quality:**
-- [ ] Uses third person ("This skill should be used when...")
+- [ ] Uses imperative phrasing ("Use when...")
 - [ ] Includes 3-5 specific trigger phrases
+- [ ] Focuses on user intent, not implementation
 - [ ] Lists concrete scenarios
 
 **Content Quality:**
