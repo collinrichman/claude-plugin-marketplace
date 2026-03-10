@@ -1,5 +1,5 @@
 {
-  "name": "collin-plugins",
+  "name": "clr-plugins",
   "owner": {
     "name": "Collin Richman"
   },
@@ -18,6 +18,16 @@
         "name": "Collin Richman"
       },
       "keywords": ["example", "starter"]
+    },
+    {
+      "name": "clr-plugin-dev",
+      "source": "clr-plugin-dev",
+      "description": "Meta plugin development tools for the clr-plugins marketplace",
+      "version": "1.0.0",
+      "author": {
+        "name": "Collin Richman"
+      },
+      "keywords": ["skill", "plugin", "scaffold", "creator", "development"]
     }
   ]
 }

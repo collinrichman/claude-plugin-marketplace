@@ -1,0 +1,7 @@
+{
+  "name": "clr-plugin-dev",
+  "description": "Meta plugin development tools for the clr-plugins marketplace",
+  "author": {
+    "name": "Collin Richman"
+  }
+}

@@ -21,7 +21,7 @@ plugins/clr-<name>/.claude-plugin/plugin.json - Plugin manifest
 - Plugin names must be kebab-case (after the `clr-` prefix)
 - Versions are managed only in `.claude-plugin/marketplace.json`, NOT in individual plugin.json files
 - Use semantic versioning
-- Marketplace name is `collin-plugins` — do not use reserved names (claude-*, anthropic-*, etc.)
+- Marketplace name is `clr-plugins` — do not use reserved names (claude-*, anthropic-*, etc.)
 
 ## Adding a New Plugin
 

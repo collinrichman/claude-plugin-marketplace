@@ -1,4 +1,4 @@
-# collin-plugins
+# clr-plugins
 
 Personal Claude Code plugin marketplace.
 
@@ -13,14 +13,14 @@ Personal Claude Code plugin marketplace.
 ### 2. Install a plugin
 
 ```bash
-/plugin install clr-hello-world@collin-plugins
+/plugin install clr-hello-world@clr-plugins
 ```
 
 ### 3. Enable auto-updates (optional)
 
 1. Run `/plugin`
 2. Go to the **Marketplaces** tab
-3. Select **collin-plugins**
+3. Select **clr-plugins**
 4. Select **Enable auto-update**
 
 Auto-updates run at Claude Code startup and will notify you when plugins are updated.
