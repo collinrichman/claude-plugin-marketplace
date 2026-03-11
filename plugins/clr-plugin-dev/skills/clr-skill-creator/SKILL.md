@@ -155,11 +155,7 @@ Skills support these substitution patterns in SKILL.md content:
 
 ### Dynamic Context Injection
 
-Use the `` !`command` `` syntax to inject shell command output into the skill content at load time. This runs a shell command and inlines its stdout:
-
-```markdown
-Current git branch: !`git branch --show-current`
-```
+Use the `` !`command` `` syntax to inject shell command output into the skill content at load time. This runs a shell command and inlines its stdout.
 
 Use sparingly — only when the skill needs live data that changes between invocations.
 
