@@ -30,6 +30,8 @@ Auto-updates run at Claude Code startup and will notify you when plugins are upd
 | Plugin | Description |
 |--------|-------------|
 | `clr-hello-world` | A simple hello world plugin to verify marketplace setup |
+| `clr-plugin-dev` | Meta plugin development tools for the clr-plugins marketplace |
+| `clr-project-workspace` | Initialize structured workspaces for non-code administrative projects |
 
 ## Contributing
 
