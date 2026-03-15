@@ -22,7 +22,7 @@
       "name": "clr-plugin-dev",
       "source": "./plugins/clr-plugin-dev",
       "description": "Meta plugin development tools for the clr-plugins marketplace",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "author": {
         "name": "Collin Richman"
       },

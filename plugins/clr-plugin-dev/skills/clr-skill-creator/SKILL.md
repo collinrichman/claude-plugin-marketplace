@@ -155,7 +155,7 @@ Skills support these substitution patterns in SKILL.md content:
 
 ### Dynamic Context Injection
 
-Use the `` !`command` `` syntax to inject shell command output into the skill content at load time. This runs a shell command and inlines its stdout.
+Prefix a backtick-wrapped shell command with `!` to inject its stdout into the skill content at load time. For example, writing an exclamation mark followed by a command in backticks (like date or git status) will execute that command and inline the output when the skill loads.
 
 Use sparingly — only when the skill needs live data that changes between invocations.
 
