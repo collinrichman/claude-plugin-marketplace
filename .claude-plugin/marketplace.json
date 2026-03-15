@@ -27,6 +27,16 @@
         "name": "Collin Richman"
       },
       "keywords": ["skill", "plugin", "scaffold", "creator", "development", "improver"]
+    },
+    {
+      "name": "clr-project-workspace",
+      "source": "./plugins/clr-project-workspace",
+      "description": "Initialize structured workspaces for non-code administrative projects like trip planning, HOA management, event coordination, and process tracking",
+      "version": "1.0.0",
+      "author": {
+        "name": "Collin Richman"
+      },
+      "keywords": ["workspace", "project", "planning", "organization", "tasks", "admin", "ingest", "inbox"]
     }
   ]
 }

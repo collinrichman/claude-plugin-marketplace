@@ -1,0 +1,7 @@
+{
+  "name": "clr-project-workspace",
+  "description": "Initialize structured workspaces for non-code administrative projects like trip planning, HOA management, event coordination, and process tracking",
+  "author": {
+    "name": "Collin Richman"
+  }
+}
