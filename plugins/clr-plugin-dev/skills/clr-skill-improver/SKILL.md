@@ -48,7 +48,15 @@ After locating the target, read its full content:
 
 Read any referenced supporting files that are relevant to understanding the skill's behavior.
 
-## Step 3: Analyze the Session
+## Step 3: Analyze
+
+Determine the analysis mode based on context:
+
+- **Session-driven** (default) — The skill was used in this conversation. Analyze how it performed by reviewing the conversation history.
+- **Spec-driven** — The user asks to compare against documentation, best practices, or the agentskills.io spec. Analyze the skill's content against known standards rather than session behavior.
+- **Combined** — Both modes apply when the user provides feedback referencing external standards after using the skill.
+
+### Session-Driven Analysis
 
 Review the current conversation to understand how the target skill or command was used. Load **[references/session-analysis.md](references/session-analysis.md)** for the detailed analysis checklist.
 
@@ -64,6 +72,27 @@ The analysis covers five dimensions:
 
 5. **Supporting files** — Are `references/` files used effectively? Is content in the right place (SKILL.md vs references/)? Should any content be moved, added, or removed?
 
+### Spec-Driven Analysis
+
+When the user requests comparison against documentation or best practices, evaluate the skill against the agentskills.io spec and Claude Code docs. Check both mechanical constraints and quality heuristics:
+
+**Mechanical constraints (from agentskills.io spec):**
+- Name matches parent directory name
+- Name ≤ 64 characters, lowercase alphanumeric and hyphens only, no consecutive hyphens
+- Description ≤ 1024 characters
+- SKILL.md under 500 lines / 5000 tokens recommended
+- Required fields present (`name`, `description`)
+
+**Quality heuristics (from agentskills.io best practices):**
+- Is the skill grounded in real expertise, or is it generic LLM knowledge?
+- Does it add what the agent lacks and omit what the agent already knows?
+- Does it provide defaults rather than presenting equal-weight menus of options?
+- Does it favor procedures (reusable methods) over declarations (specific answers)?
+- Is control calibrated to fragility — prescriptive for fragile operations, flexible for tolerant ones?
+- Are instructions at moderate detail, or exhaustively covering every edge case?
+
+To perform spec-driven analysis, read the skill's content and evaluate against these criteria. Fetch relevant documentation if the user points to specific sources (e.g., agentskills.io pages, Claude Code docs).
+
 Combine session evidence with user feedback (`$1`) if provided. The user's feedback takes priority when it conflicts with automated analysis — the user knows what they wanted.
 
 ## Step 4: Synthesize Improvements
@@ -76,7 +105,8 @@ Produce a concrete list of changes. Each improvement must:
 Common improvement categories:
 - **Description rewrites** — Add missing trigger phrases, improve intent matching, remove false-positive triggers
 - **Instruction edits** — Clarify ambiguous steps, add missing steps, reorder for better flow, fix incorrect guidance
-- **Frontmatter changes** — Adjust `allowed-tools`, add `disable-model-invocation`, change `context` settings
+- **Frontmatter changes** — Adjust `allowed-tools` (including pattern syntax like `Bash(git:*)`), add `disable-model-invocation`, change `context`/`agent`/`model`/`hooks` settings
+- **Script improvements** — Bundle repeated agent logic into `scripts/`, improve existing scripts for agentic use (structured JSON output, no interactive prompts, meaningful exit codes, inline dependencies with `uv run`/`npx`)
 - **Reference file updates** — Move verbose content from SKILL.md to references/, add missing reference docs, update stale references
 - **Command-to-skill migration** — If improving a command, suggest converting it to a skill for better features (supporting files, frontmatter options)
 
@@ -147,7 +177,8 @@ Commands (`.claude/commands/*.md`) follow the same analysis and improvement work
 - Preserve the original writing style and conventions of the target
 - Follow the `clr-` prefix convention for any new names introduced
 - For version bumps, use semantic versioning (patch for fixes, minor for features)
-- If session evidence is insufficient to support a change, say so rather than guessing
+- If session evidence is insufficient to support a behavioral change, say so rather than guessing
+- Spec-compliance issues (name validation, description length, missing required fields) do not require session evidence — these are objective violations
 - If the skill has no obvious issues, say so — do not manufacture improvements
 
 ## Additional Resources

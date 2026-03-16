@@ -112,6 +112,11 @@ Before writing, gather concrete examples:
 - What would a user say to trigger it?
 - What scripts, references, or assets would help?
 
+Ground skill content in real expertise, not general LLM knowledge. Effective approaches:
+- **Extract from a hands-on task** — Complete the task in conversation first, noting corrections and context provided along the way, then distill the reusable pattern into a skill.
+- **Synthesize from project artifacts** — Feed internal docs, runbooks, API specs, code review comments, or incident reports into the creation process. Project-specific material produces far better skills than generic best-practices articles.
+- **Add what the agent lacks, omit what it knows** — Focus on project-specific conventions, non-obvious edge cases, and particular tools/APIs. Do not explain general concepts the agent already understands.
+
 Analyze each example to identify reusable resources:
 - **Repeated code** → `scripts/` (deterministic, token-efficient)
 - **Domain knowledge** → `references/` (loaded as needed)
@@ -141,8 +146,11 @@ Beyond `name`, `description`, and `argument-hint`, these fields control invocati
 
 - **`disable-model-invocation: true`** — Prevents Claude from auto-triggering. Only manual `/skill-name` invocation works. Use for skills with side effects (deploy, commit, destructive operations).
 - **`user-invocable: false`** — Hides from user's slash command list. Use for background knowledge skills that only Claude should invoke.
-- **`allowed-tools`** — Restricts which tools the skill can use. Use for security-sensitive skills (e.g., read-only research skills that should not write files). Accepts a list of tool names.
-- **`context: fork`** — Runs the skill in an isolated subagent context. Use when the skill is heavy, self-contained, or should not pollute the main conversation context. Combine with the `agent` field to specify which subagent type runs it.
+- **`allowed-tools`** — Pre-approves specific tools so they run without permission prompts. Space-delimited. Supports patterns: `Bash(git:*) Bash(jq:*) Read`. Use for reducing permission friction or restricting to read-only operations.
+- **`context: fork`** — Runs the skill in an isolated subagent context. Use when the skill is heavy, self-contained, or should not pollute the main conversation context.
+- **`agent`** — Which subagent type to use when `context: fork` is set. Options: `Explore`, `Plan`, `general-purpose`, or a custom agent name from `.claude/agents/`. Default: `general-purpose`.
+- **`model`** — Model override for when this skill is active.
+- **`hooks`** — Hooks scoped to this skill's lifecycle. See Claude Code hooks documentation for the configuration format.
 
 ### String Substitutions
 

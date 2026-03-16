@@ -21,7 +21,7 @@ clr-skill-name/
 
 ### Required Fields
 
-- **name**: Skill identifier. Must start with `clr-`. Use kebab-case (e.g., `clr-pdf-editor`).
+- **name**: Skill identifier. Must start with `clr-`. Use kebab-case (e.g., `clr-pdf-editor`). Must match the parent directory name. Max 64 characters. Lowercase letters, numbers, and hyphens only. No consecutive hyphens (`--`), cannot start or end with a hyphen.
 - **description**: When this skill triggers. Use imperative phrasing with specific trigger phrases.
 
 ### Optional Fields
@@ -81,6 +81,12 @@ Skills use a three-level loading system:
 - Validation utilities
 - Automation helpers
 - Parsing tools
+
+Script design for agentic use:
+- Avoid interactive prompts — agents cannot respond to TTY input. Accept all input via flags, env vars, or stdin.
+- Return structured output (JSON) to stdout for easy parsing. Reserve stderr for diagnostics.
+- Exit 0 on success, non-zero on failure, with clear error messages.
+- For self-contained Python scripts, use PEP 723 inline dependencies with `uv run`. For JS/TS, use `npx` or `bunx`.
 
 **assets/ (used in output, not loaded into context):**
 - Templates

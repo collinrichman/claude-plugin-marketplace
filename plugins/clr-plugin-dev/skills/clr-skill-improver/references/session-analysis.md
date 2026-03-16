@@ -144,9 +144,41 @@ Evaluate whether the skill's file structure supports its behavior effectively.
 - Which reference files were NOT loaded but should have been
 - Points where a script or template would have produced better results
 
+## Dimension 6: Spec-Level Quality (for spec-driven or combined analysis)
+
+Evaluate whether the skill follows agentskills.io best practices and spec constraints. These checks apply regardless of session behavior.
+
+### Check Spec Compliance
+- Does the `name` field match the parent directory name?
+- Is the name within 64 characters, with no consecutive hyphens?
+- Is the description within 1024 characters?
+- Is SKILL.md under 500 lines / 5000 tokens?
+- Are all required frontmatter fields present?
+
+### Check Context Efficiency
+- Does the skill explain concepts the agent already knows? (e.g., explaining what a PDF is, how HTTP works)
+- Could any content be cut because the agent handles it fine without instruction?
+- Are there sections that are generic best-practices rather than project-specific guidance?
+
+### Check Instruction Design
+- Does the skill provide clear defaults, or present equal-weight menus of options?
+- Does it favor reusable procedures over task-specific declarations?
+- Is control calibrated to fragility — prescriptive where consistency matters, flexible where variation is tolerable?
+- Are instructions at moderate detail, or exhaustively covering unlikely edge cases?
+
+### Check Script Opportunities
+- Does the agent repeatedly generate similar code across runs that could be bundled in `scripts/`?
+- Do existing scripts follow agentic design patterns (no TTY, structured output, clear exit codes)?
+
+### Evidence to Collect
+- Specific content that violates spec constraints (with the constraint cited)
+- Sections that explain what the agent already knows (quote the redundant content)
+- Places where a default should replace a menu of options
+- Script candidates identified from repeated agent behavior
+
 ## Synthesizing Improvements
 
-After completing all five dimensions:
+After completing all applicable dimensions:
 
 1. **Rank findings by impact** — Which issues had the most negative effect on the user's experience?
 2. **Filter for evidence** — Discard findings that are speculative. Keep only those supported by concrete session evidence.
