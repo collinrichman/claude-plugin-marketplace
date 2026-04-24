@@ -1,0 +1,138 @@
+<h2 class="sr-only">Gmail senders flagged for unsubscribe. Toggle to approve or skip, then confirm.</h2>
+
+<style>
+.triage-wrap { padding: 1rem 0; }
+.triage-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1rem; gap: 12px; flex-wrap: wrap; }
+.triage-title { font-size: 18px; font-weight: 500; margin: 0; color: var(--color-text-primary); }
+.triage-sub { font-size: 13px; color: var(--color-text-secondary); margin: 4px 0 0; }
+.triage-meta { display: flex; gap: 8px; font-size: 13px; color: var(--color-text-secondary); }
+.triage-bulk { display: flex; gap: 8px; margin-bottom: 1rem; }
+.triage-bulk button { font-size: 13px; padding: 6px 12px; }
+.note { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 1rem; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 10px; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; transition: border-color 120ms; }
+.card.on { border-color: var(--color-border-info); border-width: 2px; padding: 13px 15px; }
+.card.unverified { border-style: dashed; }
+.rank { font-size: 13px; color: var(--color-text-tertiary); font-weight: 500; text-align: center; }
+.meta { min-width: 0; }
+.name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+.addr { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 6px; font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
+.pill.cat-political { background: #EEEDFE; color: #3C3489; }
+.pill.cat-social { background: #E1F5EE; color: #085041; }
+.pill.cat-marketing { background: #FAECE7; color: #712B13; }
+.pill.count { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.pill.warn { background: var(--color-background-warning); color: var(--color-text-warning); }
+.subj { font-size: 13px; color: var(--color-text-secondary); font-style: italic; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toggle { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; min-width: 86px; justify-content: center; color: var(--color-text-secondary); }
+.toggle.on { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+.footer { position: sticky; bottom: 0; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); padding: 14px 0 4px; margin-top: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.footer .status { font-size: 14px; color: var(--color-text-secondary); }
+.footer .status b { color: var(--color-text-primary); font-weight: 500; }
+.confirm { padding: 8px 16px; font-size: 14px; font-weight: 500; background: var(--color-text-primary); color: var(--color-background-primary); border: none; border-radius: var(--border-radius-md); cursor: pointer; }
+.confirm:disabled { opacity: 0.35; cursor: not-allowed; }
+</style>
+
+<div class="triage-wrap">
+  <div class="triage-head">
+    <div>
+      <p class="triage-title">Inbox unsubscribe triage</p>
+      <p class="triage-sub" id="run-sub">Candidates from your Gmail inbox</p>
+    </div>
+    <div class="triage-meta">
+      <span id="approved-meta">0 approved</span>
+    </div>
+  </div>
+
+  <p class="note">Senders with verified addresses have a solid border. Dashed border = best-guess address; if no match is found, the executor falls back to display-name search.</p>
+
+  <div class="triage-bulk">
+    <button type="button" id="approve-all">Approve all</button>
+    <button type="button" id="clear-all">Clear</button>
+  </div>
+
+  <div id="cards"></div>
+
+  <div class="footer">
+    <div class="status">
+      <b id="n-sel">0</b> of <span id="n-total">0</span> selected —
+      <span id="n-emails">0</span> past emails will be archived
+    </div>
+    <button type="button" class="confirm" id="confirm-btn" disabled>Confirm and unsubscribe ↗</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Substitute __CANDIDATES_JSON__ with the array of candidate objects:
+  //   { rank, sender, name, count, subject, verified, cat }
+  const candidates = __CANDIDATES_JSON__;
+
+  const state = Object.fromEntries(candidates.map(c => [c.sender, false]));
+  const catLabel = { political: "Political", social: "Social", marketing: "Marketing" };
+
+  const cardsEl = document.getElementById("cards");
+  document.getElementById("n-total").textContent = candidates.length;
+  cardsEl.innerHTML = candidates.map(c => `
+    <div class="card ${c.verified ? "" : "unverified"}" data-sender="${c.sender}">
+      <div class="rank">${c.rank}</div>
+      <div class="meta">
+        <p class="name">${c.name}</p>
+        <p class="addr">${c.sender}</p>
+        <div class="tags">
+          <span class="pill cat-${c.cat || "marketing"}">${catLabel[c.cat || "marketing"]}</span>
+          <span class="pill count">${c.count} emails</span>
+          ${c.verified ? "" : "<span class=\"pill warn\">Unverified</span>"}
+        </div>
+        <p class="subj">Recent: ${c.subject}</p>
+      </div>
+      <button class="toggle" type="button" data-action="toggle">Skip</button>
+    </div>
+  `).join("");
+
+  function render() {
+    const approved = candidates.filter(c => state[c.sender]);
+    const total = approved.reduce((s, c) => s + (c.count || 0), 0);
+    document.getElementById("n-sel").textContent = approved.length;
+    document.getElementById("n-emails").textContent = total;
+    document.getElementById("approved-meta").textContent = `${approved.length} approved`;
+    document.getElementById("confirm-btn").disabled = approved.length === 0;
+    document.querySelectorAll(".card").forEach(el => {
+      const s = el.dataset.sender;
+      const on = state[s];
+      el.classList.toggle("on", on);
+      const btn = el.querySelector(".toggle");
+      btn.classList.toggle("on", on);
+      btn.textContent = on ? "Approved" : "Skip";
+    });
+  }
+
+  cardsEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action='toggle']");
+    if (!btn) return;
+    const card = btn.closest(".card");
+    const s = card.dataset.sender;
+    state[s] = !state[s];
+    render();
+  });
+
+  document.getElementById("approve-all").addEventListener("click", () => {
+    candidates.forEach(c => state[c.sender] = true);
+    render();
+  });
+  document.getElementById("clear-all").addEventListener("click", () => {
+    candidates.forEach(c => state[c.sender] = false);
+    render();
+  });
+
+  document.getElementById("confirm-btn").addEventListener("click", () => {
+    const approved = candidates.filter(c => state[c.sender]);
+    if (approved.length === 0) return;
+    const list = approved.map(c => `- ${c.name} <${c.sender}> (${c.count} past emails${c.verified ? "" : ", unverified"})`).join("\n");
+    const msg = `Unsubscribe triage — I approved ${approved.length} sender${approved.length === 1 ? "" : "s"}. Execute the full flow via Claude in Chrome on mail.google.com (do NOT use the Gmail MCP connector):\n\n${list}\n\nFor each sender: navigate to #search/from:<sender>, open most recent thread, click Gmail's native Unsubscribe chip, confirm dialog, return to search, select all (and select-all-matching banner if offered), click Archive, confirm bulk if prompted, verify the archive toast count, then append the verified address to processed_senders.json. For any unverified sender with no match, fall back to from:<display name> and use the real address from the first matching email. Report a per-sender status table when done — never assume archive counts.`;
+    if (typeof sendPrompt === "function") sendPrompt(msg);
+  });
+
+  render();
+})();
+</script>

@@ -37,6 +37,16 @@
         "name": "Collin Richman"
       },
       "keywords": ["workspace", "project", "planning", "organization", "tasks", "admin", "ingest", "inbox"]
+    },
+    {
+      "name": "clr-inbox-cleanup",
+      "source": "./plugins/clr-inbox-cleanup",
+      "description": "Drive Gmail in Chrome to scan for marketing senders, review candidates in a live triage widget, and execute unsubscribe + archive in bulk",
+      "version": "1.0.0",
+      "author": {
+        "name": "Collin Richman"
+      },
+      "keywords": ["gmail", "unsubscribe", "inbox", "email", "cleanup", "chrome", "marketing"]
     }
   ]
 }
