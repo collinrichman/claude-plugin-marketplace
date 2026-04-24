@@ -57,11 +57,11 @@ When the user confirms in the widget, the `sendPrompt()` callback delivers a lis
 
 3. Find Gmail's native Unsubscribe link in the message header (`find` query: "Unsubscribe link next to sender address in header"). Click it.
 
-4. Handle the unsubscribe dialog:
+4. Handle the unsubscribe dialog with judgment — the flow varies by sender:
    - **One-click**: Dialog has Cancel / Unsubscribe → click Unsubscribe. Done.
-   - **Go to website**: Dialog has Cancel / Go to website → click Go to website, then handle the third-party preference page (see references/unsubscribe-flows.md for known patterns: Klaviyo email-form, SevenRooms toggle UI, Nutshell preferences).
+   - **Go to website**: Dialog has Cancel / Go to website → click through and navigate the third-party preference page on the fly (usually an obvious Unsubscribe button or a form).
    - **No native chip**: Search for an in-body Unsubscribe link with `find` and follow that flow.
-   - **Site-login required** (Nextdoor, Pinterest beyond per-campaign): Skip the unsubscribe step. Tell the user the sender requires manual action on their site.
+   - **Site-login required** (e.g., Nextdoor, Pinterest beyond per-campaign): Skip the unsubscribe step. Tell the user the sender requires manual action on their site.
 
 5. Return to Gmail search for the sender. Click the select-all checkbox at coordinate `(307, 156)`.
 
@@ -88,22 +88,21 @@ These come from real failures — do not repeat them:
 
 **Never assume archive counts.** The exact pattern that broke trust: "ChiTown Baggers" got searched as `from:info@chitownbaggers.com`, returned zero results, and a select-all + archive on an empty page silently did nothing — but the sender was actually `leagues@chitownbaggers.com`. Always read the toast or screenshot after archiving to confirm the count. If the search returns 0 results, that's a signal to fall back to a display-name search, not to move on.
 
-**Display-name searches are essential.** Many senders use non-obvious addresses (e.g., `Target@express.medallia.com` for Target surveys, `no-reply+f006105c@toast-restaurants.com` for Tanuki Sushi). Never trust an address you guessed without opening an email to verify.
+**Display-name searches are essential.** Many senders use non-obvious addresses (e.g., Target surveys come from `Target@express.medallia.com`, Toast-hosted restaurants from `no-reply+<hash>@toast-restaurants.com`). Never trust an address you guessed without opening an email to verify.
 
 **Some transactional addresses look promotional.** Nordstrom Benefits Portal (`NordstromBenefitsPortal@alight.com`) sends recurring messages but they are 401k retirement statements — not marketing. Always read at least one email before adding a high-volume "survey" or "benefits" sender to the candidate list. When in doubt, skip.
 
-**One sender, multiple addresses.** A brand often sends from several addresses (Goodreads has `no-reply@mail.goodreads.com` AND `noreply@goodreads.com`; Paperless Post has `help@email.paperlesspost.com` AND `paperless@email.paperlesspost.com`). Each needs its own unsubscribe + archive pass. Adding the first to the ledger does not catch the second.
+**One sender, multiple addresses.** A brand often sends from several addresses (Goodreads uses both `no-reply@mail.goodreads.com` and `noreply@goodreads.com`; Paperless Post uses `help@...` for T&Cs and `paperless@...` for marketing). Each needs its own unsubscribe + archive pass. Adding the first to the ledger does not catch the second.
 
-**Politicial campaigns under many display names share one address.** Chris Pappas's campaign uses display names like "Sherrod Brown", "Ken Burns", "Mark Kelly", "James Carville" — but they all come from `teampappas@e.chrispappas.org`. One unsubscribe handles them all.
+**Political campaigns use many display names from one address.** A single campaign address often signs emails as surrogates ("Sherrod Brown", "Ken Burns", etc.) to get opens. One unsubscribe handles them all.
 
-**DoorDash-style addresses bundle marketing AND receipts.** Unsubscribing from `no-reply@doordash.com` and archiving everything from that address sweeps up historical order confirmations along with marketing. Not destructive (still searchable in All Mail), but worth flagging in the report so the user isn't surprised.
+**Some addresses bundle marketing AND receipts.** Unsubscribing from a sender like `no-reply@doordash.com` and archiving everything from that address sweeps up historical order confirmations along with marketing. Not destructive (still searchable in All Mail), but worth flagging in the report so the user isn't surprised.
 
 **Chrome occasionally hangs.** If `screenshot` or `find` time out 45 seconds in a row, navigate to `https://www.google.com` to reset, wait, then resume. Don't keep retrying the hung action.
 
 ## Resources
 
-- `references/unsubscribe-flows.md` — catalog of third-party unsubscribe page patterns (Klaviyo, SevenRooms, Nutshell, Substack, etc.) and how to handle each
-- `references/ledger-format.md` — schema for `processed_senders.json` and `candidates.json`
+- `references/ledger-format.md` — schema for `processed_senders.json`, `candidates.json`, and the run log
 - `assets/triage-widget.html` — the live review widget template; substitute `__CANDIDATES_JSON__` with the candidate array
 
 ## Output paths
